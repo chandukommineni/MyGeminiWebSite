@@ -1,20 +1,25 @@
 import React, { useContext, useState } from "react";
 import "./Sidebar.css";
 import { assets } from "../../assets/assets";
-import {Context} from "../../context/Context"
+
+import { setRecentPrompt, onSent, newChat } from "../../store/ContextSlice";
+import { useDispatch, useSelector } from 'react-redux';
 const Sidebar = () => {
   const [extended, setExtended] = useState(false);
-  const {onSent,prevPrompts,setRecentPrompt,newChat}=useContext(Context);
+  const dispatch = useDispatch();
+  const { prevPrompts } = useSelector((state) => state.data);
+  const loadPrompt = async (prompt) => {
+    dispatch(setRecentPrompt(prompt));
+    await dispatch(onSent(prompt));
+  };
+  
 
-  const loadPrompt=async (prompt)=>{
-    setRecentPrompt(prompt)
-    await onSent(prompt)
-  }
+  
   return (
     <div className="sidebar">
       <div className="top" >
         <img src={assets.menu_icon} alt="" className="menu" onClick={()=>setExtended(!extended)} />
-        <div className="new-chat" onClick={newChat}>
+        <div className="new-chat" onClick={()=>dispatch(newChat())}>
           <img src={assets.plus_icon} alt="" />
           {extended ? <p>New Chat</p> : null}
         </div>
